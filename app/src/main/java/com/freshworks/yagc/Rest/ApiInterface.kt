@@ -2,6 +2,7 @@ package com.freshworks.yagc.Rest
 
 import android.support.annotation.NonNull
 import com.freshworks.yagc.Model.*
+import com.freshworks.yagc.Model.FeedsURL.FeedsUrlModel
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -19,6 +20,10 @@ interface ApiInterface {
     @GET("repositories")
     fun getPublicRepos(@Query("since") since: String): Call<AllRepo>
 
+
+
+    @GET("feeds")
+    fun getFeedLinks() : Call<FeedsUrlModel>
 
     @POST("authorizations")
     @Headers("Accept: application/json")

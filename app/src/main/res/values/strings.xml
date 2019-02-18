@@ -3,4 +3,5 @@
     <string name="NAME_SHARED_PREFERENCES">MySharedPreferences</string>
     <string name="KEY_ACCESS_TOKEN">KEY_ACCESS_TOKEN</string>
     <string name="notset">NotSet</string>
+    <string name="KEY_CREDENTIALS_TOKEN">KEY_CREDENTIALS_USERNAME_PASSWORD</string>
 </resources>

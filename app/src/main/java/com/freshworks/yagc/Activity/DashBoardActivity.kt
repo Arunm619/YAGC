@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.freshworks.yagc.Adapter.FeedAdapter
@@ -46,6 +48,25 @@ class DashBoardActivity : AppCompatActivity() {
         getUserFeedLinks()
 
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.mymenu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle presses on the action bar menu items
+        when (item.itemId) {
+
+            R.id.goto_public_events -> {
+
+                startActivity(Intent(this, PublicEventsActivity::class.java))
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun checkCredentialsOkay() {

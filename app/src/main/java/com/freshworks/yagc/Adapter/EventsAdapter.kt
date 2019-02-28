@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,8 +39,7 @@ class EventsAdapter(private var list: MutableList<EventModel>, private val mCont
         Glide.with(mContext).load(list[position].actor.avatar_url).into(holder.iv_profile)
         holder.tv_username.text = list[position].actor.display_login
 
-        holder.tvContent.text = list[position].actor.url
-
+        holder.tvContent.text = position.toString()//list[position].actor.url
 
 
         holder.setItemClickListener(object : ItemClickListener {

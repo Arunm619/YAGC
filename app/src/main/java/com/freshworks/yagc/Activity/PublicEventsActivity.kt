@@ -44,16 +44,17 @@ class PublicEventsActivity : AppCompatActivity() {
     private var pageNumberFromBundle: Int = 0
     private var ScrolViewPositionFromBundle: Int = 0
     var isLoading: Boolean = true
-    var isLoadingTop: Boolean = true
+    var isLoadingTop: Boolean = false
     var lastVisiblePosition: Int = 0
     var topPage = -1
-    var Variable_ScrollViewPosition = -1
+    var scrollviewpositionLocalHolder = -1
 
     lateinit var pref: SharedPreferences
     val llm = LinearLayoutManager(baseContext, LinearLayoutManager.VERTICAL, false)
 
     val TAG = "Arun"
 
+    var isFirstLoadComplete = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.freshworks.yagc.R.layout.activity_public_events)
@@ -77,12 +78,12 @@ class PublicEventsActivity : AppCompatActivity() {
 
 
             Log.d(TAG, "Scrollposition to be loaded in this page = $ScrolViewPositionFromBundle")
-            Variable_ScrollViewPosition = ScrolViewPositionFromBundle
+            scrollviewpositionLocalHolder = ScrolViewPositionFromBundle
 
         } else {
             Log.d(TAG, "Oncreate Started for First time")
             page = 1
-            Variable_ScrollViewPosition = -1
+            scrollviewpositionLocalHolder = -1
         }
 
         pref =
@@ -108,12 +109,9 @@ class PublicEventsActivity : AppCompatActivity() {
                 visibleItemCount = llm.childCount
                 totalItemCount = llm.itemCount
                 pastVisibleItem = llm.findFirstVisibleItemPosition()
-
                 lastVisiblePosition = pastVisibleItem
 
                 Log.d(TAG, "$lastVisiblePosition")
-
-
 
                 if (dy > 0) {
                     //scrolling up
@@ -121,8 +119,6 @@ class PublicEventsActivity : AppCompatActivity() {
                         if (totalItemCount > previous_total) {
                             isLoading = false
                             previous_total = totalItemCount
-                        } else {
-                            //  Log.d("Testing", "Lol check")
                         }
                     }
 
@@ -135,10 +131,44 @@ class PublicEventsActivity : AppCompatActivity() {
                     //scrolling down
 
 
+                    Log.d(TAG, "Scrolling down")
+                    if (isFirstLoadComplete && scrollviewpositionLocalHolder != -1) {
+                        Log.d(TAG, "Local Holder $scrollviewpositionLocalHolder and First load is completed ")
+
+                        if (!isLoadingTop) {
+                            Log.d(TAG, "isLoading Top = $isLoadingTop")
+
+                            val pagetoBeLoaded = findPageTobeLoaded(scrollviewpositionLocalHolder)
+                            Log.d(
+                                TAG,
+                                "Page to be loaded = $pagetoBeLoaded Last visible position = $lastVisiblePosition"
+                            )
+
+                            if (lastVisiblePosition % 10 <= 2 && pagetoBeLoaded > 0) {
+                                isLoadingTop = true
+                                performPaginationforAddingatFront(apiServices, pagetoBeLoaded)
+                            } else {
+                                Log.d(TAG, "You are at top page")
+                            }
+                        }
+
+                    }
+                    else{
+
+
+                    }
+
+
                 }
 
             }
         })
+    }
+
+    private fun findPageTobeLoaded(position: Int): Int {
+
+        return (position / 10)
+
     }
 
 
@@ -161,7 +191,7 @@ class PublicEventsActivity : AppCompatActivity() {
                 val data = response.body()
                 if (data == null) {
                     Toast.makeText(baseContext, "API rate limit EXCEEDED", Toast.LENGTH_LONG).show()
-
+                    isFirstLoadComplete = true
 
                 } else {
                     adapter = EventsAdapter(data, baseContext)
@@ -170,7 +200,13 @@ class PublicEventsActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     isLoading = true
 
-                    Handler().postDelayed({ rv_events.smoothSnapToPosition((ScrolViewPositionFromBundle%per_page)) }, 200)
+                    Handler().postDelayed(
+                        {
+                            rv_events.smoothSnapToPosition((ScrolViewPositionFromBundle % per_page))
+                            isFirstLoadComplete = true
+                        },
+                        400
+                    )
 
 
                 }
@@ -199,6 +235,7 @@ class PublicEventsActivity : AppCompatActivity() {
         callForPublicEvents.enqueue(object : retrofit2.Callback<ArrayList<EventModel>> {
             override fun onFailure(call: Call<ArrayList<EventModel>>, t: Throwable) {
                 Toast.makeText(baseContext, "Not okay bro try again ${t.stackTrace}", Toast.LENGTH_LONG).show()
+                isLoadingTop = false
             }
 
             override fun onResponse(
@@ -214,11 +251,7 @@ class PublicEventsActivity : AppCompatActivity() {
 
                     adapter?.notifyDataSetChanged()
                     progressBar.visibility = View.GONE
-                    isLoadingTop = false
 
-
-                    rv_events.smoothSnapToPosition(ScrolViewPositionFromBundle)
-                    //rv_events.layoutManager?.scrollToPosition(ScrolViewPositionFromBundle)
 
                 } else {
                     Toast.makeText(
@@ -229,8 +262,15 @@ class PublicEventsActivity : AppCompatActivity() {
                         .show()
                     progressBar.visibility = View.GONE
 
+                    Handler().postDelayed(
+                        { rv_events.smoothSnapToPosition((scrollviewpositionLocalHolder % 10) + 10) },
+                        2000
+                    )
+
 
                 }
+
+                isLoadingTop = false
 
 
             }
@@ -246,19 +286,7 @@ class PublicEventsActivity : AppCompatActivity() {
 
 
         Log.d(TAG, "Rotated: ")
-
-        //storing current page number
-        // outState?.putInt(getString(R.string.KEY_PAGE_NUMBER_ACTIVE), page)
-        // Log.d(TAG, "page number saved = $page")
-
-
-        //storing the scroll view position
-//        val localScrollViewPosition = (lastVisiblePosition)
-//        Log.d(TAG, "ScrollViewPosition saved = $localScrollViewPosition")
-//        outState?.putInt(getString(R.string.KEY_CURRENT_SCROLLVIEW_POSITION), localScrollViewPosition)
-
-
-        if (Variable_ScrollViewPosition == -1) {
+        if (scrollviewpositionLocalHolder == -1) {
 
             Log.d(TAG, "FIRST TIME as VARIBALE  is -1")
 
@@ -273,8 +301,8 @@ class PublicEventsActivity : AppCompatActivity() {
         } else {
 
 
-            Log.d(TAG, "Variable value is $Variable_ScrollViewPosition last visible position is $lastVisiblePosition")
-            val localCurrentVisibleScrollPosition = lastVisiblePosition + (Variable_ScrollViewPosition / 10) * 10
+            Log.d(TAG, "Variable value is $scrollviewpositionLocalHolder last visible position is $lastVisiblePosition")
+            val localCurrentVisibleScrollPosition = lastVisiblePosition + (scrollviewpositionLocalHolder / 10) * 10
             Log.d(TAG, "Current Visible Scroll Position saved = $localCurrentVisibleScrollPosition")
             outState?.putInt(getString(R.string.KEY_CURRENT_VISIBLE_SCROLL_POSITION), localCurrentVisibleScrollPosition)
 
@@ -286,14 +314,13 @@ class PublicEventsActivity : AppCompatActivity() {
 
         }
 
-
-
-
-
         super.onSaveInstanceState(outState)
     }
 
 
+    /*
+    * performPagination at the bottom
+    * */
     fun performPagination(apiServices: ApiInterface) {
         progressBar.visibility = View.VISIBLE
         val callForPublicEvents = apiServices.getPublicEvent(true, page = page, per_page = per_page)
@@ -306,7 +333,7 @@ class PublicEventsActivity : AppCompatActivity() {
         callForPublicEvents.enqueue(object : retrofit2.Callback<ArrayList<EventModel>> {
             override fun onFailure(call: Call<ArrayList<EventModel>>, t: Throwable) {
                 Toast.makeText(baseContext, "Not okay bro try again ${t.stackTrace}", Toast.LENGTH_LONG).show()
-                isLoading = true
+
             }
 
             override fun onResponse(
@@ -330,7 +357,7 @@ class PublicEventsActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
 
                 }
-                isLoading = true
+
             }
 
 
@@ -359,7 +386,7 @@ class PublicEventsActivity : AppCompatActivity() {
                 return snapMode
             }
         }
-        smoothScroller.targetPosition = position%per_page
+        smoothScroller.targetPosition = position
 
         Log.d(TAG, "Scrolled to Position $position ")
 

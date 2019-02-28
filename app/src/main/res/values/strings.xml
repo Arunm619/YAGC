@@ -6,4 +6,8 @@
     <string name="KEY_CREDENTIALS_TOKEN">KEY_CREDENTIALS_USERNAME_PASSWORD</string>
     <string name="events">Events</string>
     <string name="my_home">My Home</string>
+    <string name="KEY_PAGE_NUMBER_ACTIVE">KEY_SAVED_PAGE_NUMBER_ACTIVE</string>
+    <string name="KEY_CURRENT_SCROLLVIEW_POSITION">KEY_CURRENT_SCROLLVIEW_POSITION</string>
+    <string name="KEY_CURRENT_VISIBLE_SCROLL_POSITION">CurrentVisibleScrollPosition</string>
+    <string name="KEY_CURRENT_VISIBLE_PAGE">KEY_CURRENT_VISIBLE_PAGE</string>
 </resources>

@@ -35,12 +35,7 @@ class ApiClient {
 
         val client: Retrofit
             get() {
-
-
-
                 val timeOut = 32 * 1000
-
-
                 val httpClient = OkHttpClient.Builder()
 
                 httpClient

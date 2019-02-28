@@ -70,9 +70,10 @@ class LoginActivity : AppCompatActivity() {
             editor.apply()
 
 
+            ApiClient.token = credentials_token
+
             val apiServices = ApiClient.client.create(ApiInterface::class.java)
 
-            ApiClient.token = credentials_token
             Log.d("TOKEN BUILD ", credentials_token)
             val callforBasicToken = apiServices.authorizations(authRequestModel)
 

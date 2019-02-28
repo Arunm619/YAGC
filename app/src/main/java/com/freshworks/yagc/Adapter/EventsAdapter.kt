@@ -1,5 +1,6 @@
 package com.freshworks.yagc.Adapter
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.net.Uri
@@ -33,13 +34,14 @@ class EventsAdapter(private var list: MutableList<EventModel>, private val mCont
         return list.size
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: EventsViewHolder, position: Int) {
 
 
         Glide.with(mContext).load(list[position].actor.avatar_url).into(holder.iv_profile)
         holder.tv_username.text = list[position].actor.display_login
 
-        holder.tvContent.text = list[position].repo.toString()
+        holder.tvContent.text = list[position].actor.url
 
 
 
@@ -70,6 +72,7 @@ class EventsAdapter(private var list: MutableList<EventModel>, private val mCont
 
 
     }
+
     fun deleteEvents() {
         list.clear()
 
@@ -79,6 +82,9 @@ class EventsAdapter(private var list: MutableList<EventModel>, private val mCont
         list.add(e)
     }
 
+    fun addatFirst(e: EventModel) {
+        list.add(0, e)
+    }
 
 
 }

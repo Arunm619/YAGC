@@ -52,26 +52,14 @@ class ApiClient {
                 if (retrofit == null) {
 
 
-                    /*  if (token != "")
-                          httpClient.addInterceptor(object : Interceptor {
-                              override fun intercept(chain: Interceptor.Chain): Response {
-                                  val request: Request =
-                                      chain.request().newBuilder().addHeader("Authorization", token).build()
-                                  return chain.proceed(request)
-
-                              }
-
-
-                          })*/
-
-                    retrofit = Retrofit.Builder()
+                    this.retrofit = Retrofit.Builder()
                         .baseUrl(this.BASE_URL)
                         .addConverterFactory(GsonConverterFactory.create())
 
                         .client(httpClient.build())
                         .build()
                 }
-                return retrofit!!
+                return this.retrofit!!
             }
     }
 
